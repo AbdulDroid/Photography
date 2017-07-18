@@ -1,0 +1,74 @@
+{
+  "questions": [
+    {
+      "question": "The amount of light or darkness on a photograph is known as the:",
+      "optionOne": "Exposure",
+      "optionTwo": "Shutter speed",
+      "optionThree": "Contrast",
+      "correctAnswer": "Exposure"
+    },
+    {
+      "question": "In a gig setting (i.e. low light), the ISO should be set to:",
+      "optionOne": "the highest setting there is",
+      "optionTwo": "the lowest setting there is",
+      "optionThree": "between 400 to 1600, depending on camera",
+      "correctAnswer": "between 400 to 1600, depending on camera"
+    },
+    {
+      "question": "The amount of light passing through a lens is defined by the:",
+      "optionOne": "Shutter speed",
+      "optionTwo": "Aperture",
+      "optionThree": "Film speed",
+      "correctAnswer": "Aperture"
+    },
+    {
+      "question": "Perfect exposure is a result of the right mixture of:",
+      "optionOne": "Shutter speed + Aperture + Resolution",
+      "optionTwo": "Exposure + Aperture + Shutter speed",
+      "optionThree": "Aperture + Shutter speed + Film speed",
+      "correctAnswer": "Aperture + Shutter speed + Film speed"
+    },
+    {
+      "question": "What is Aperture measured in?",
+      "optionOne": "Spots",
+      "optionTwo": "Stops",
+      "optionThree": "F Numbers",
+      "correctAnswer": "F Numbers"
+    },
+    {
+      "question": "What is shutter speed measured in?",
+      "optionOne": "Stops",
+      "optionTwo": "Seconds",
+      "optionThree": "Fractions",
+      "correctAnswer": "Seconds"
+    },
+    {
+      "question": "What is the Unit of measurement for light in photography?",
+      "optionOne": "Stops",
+      "optionTwo": "Shutter speed",
+      "optionThree": "Candelabras",
+      "correctAnswer": "Stops"
+    },
+    {
+      "question": "if a Shutter speed is 1/100, what is twice as quick?",
+      "optionOne": "2/200",
+      "optionTwo": "1/50",
+      "optionThree": "1/500",
+      "correctAnswer": "1/50"
+    },
+    {
+      "question": "A low Aperture would create:",
+      "optionOne": "A smaller depth of field",
+      "optionTwo": "A large depth of field",
+      "optionThree": "Aperture doesn't change the depth",
+      "correctAnswer": "Aperture doesn't change the depth"
+    },
+    {
+      "question": "What Is Image Stabilization",
+      "optionOne": "Reduce the blurring effects",
+      "optionTwo": "Increase blurring effects",
+      "optionThree": "Enhance Image",
+      "correctAnswer": "Reduce the blurring effects"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Photography</string>
+    <string name="content_desc">Camera Images</string>
+
+    <!-- TextView texts-->
+    <string name="you_passed">Congratulations</string>
+    <string name="passed_text">You have successfully passed the photography assessment.</string>
+    <string name="you_failed">Unsuccessful</string>
+    <string name="failure_text"> Don\'t give up just yet. You can retake the assessment again.</string>
+    <string name="time_up">Time Up!!!</string>
+    <string name="time_up_text">Don\'t give up yet. Are you up for the next Question?</string>
+    <string name="choose_yes">If Yes</string>
+    <string name="choose_no">If No</string>
+    <string name="photography"> Photography is the science, art, application and practice of
+        creating durable images by recording light or other electromagnetic radiation, either
+        electronically by means of an image sensor, or chemically by means of a light&#8211;sensitive
+        material such as photographic film.\n\nTypically, a lens is used to focus the light reflected
+        or emitted from objects into a real image on the light&#8211;sensitive surface inside a camera
+        during a timed exposure. With an electronic image sensor, this produces an electrical
+        charge at each pixel, which is electronically processed and stored in a digital image file
+        for subsequent display or processing. The result with photographic emulsion is an invisible
+        latent image, which is later chemically \"developed\" into a visible image, either negative
+        or positive depending on the purpose of the photographic material and the method of
+        processing. </string>
+    <string name="question_id_text">Question %1$d of %2$d </string>
+    <string name="question_text">%1$s</string>
+    <string name="option_one">%1$s</string>
+    <string name="option_two">%1$s</string>
+    <string name="option_three">%1$s</string>
+
+    <!-- Button texts -->
+    <string name="take_the_test">Assessment</string>
+    <string name="take_the_course">Take a short course</string>
+    <string name="next_question">Continue</string>
+    <string name="quit_assessment">Quit</string>
+
+    <!-- Menu Texts-->
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
