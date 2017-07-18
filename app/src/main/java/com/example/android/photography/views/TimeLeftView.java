@@ -55,12 +55,18 @@ public class TimeLeftView extends View {
         super.onDraw(canvas);
         int colorPrimary = ContextCompat.getColor(mContext, R.color.gray);
         int colorPrimaryLight = ContextCompat.getColor(mContext, R.color.optionButtonColor);
+        int colorSecondary = ContextCompat.getColor(mContext, R.color.red_color);
 
         mPaint.setColor(colorPrimary);
         drawCircle(canvas, mPaint, 0, 360);
 
-        mPaint.setColor(colorPrimaryLight);
-        drawCircle(canvas, mPaint, 270, 360f * mValue / 60);
+        if(mValue <= 20) {
+            mPaint.setColor(colorSecondary);
+            drawCircle(canvas, mPaint, 270, 360f * mValue / 60);
+        }else {
+            mPaint.setColor(colorPrimaryLight);
+            drawCircle(canvas, mPaint, 270, 360f * mValue / 60);
+        }
     }
 
     private void drawCircle(Canvas canvas, Paint paint, float start, float sweep) {

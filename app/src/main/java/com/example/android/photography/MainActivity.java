@@ -38,7 +38,7 @@ import static com.example.android.photography.data.QuestionContract.QuestionEntr
 import static com.example.android.photography.data.QuestionContract.QuestionEntry.COLUMN_QUESTION;
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener,QuizFragment.OnFragmentInteractionListener {
+        View.OnClickListener {
 
     @BindView(R.id.header_view_flipper)
     ViewFlipper headerViewFlipper;
@@ -152,11 +152,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         Collections.shuffle(questionList);
-        return new ArrayList<>(questionList.subList(0, QuizActivity.QUIZ_SIZE));
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
+        return new ArrayList<>(questionList.subList(0, QuizFragment.QUIZ_SIZE));
     }
 }
