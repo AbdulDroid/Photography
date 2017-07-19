@@ -31,7 +31,7 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
     public static List<Question> questions;
     OnFeedbackReadyListener mCallback;
     int index = 0, questionNo = 1, correctAnswerCount = 0, wrongAnswerCount = 0;
-    boolean passChecker = false, timeoutChecker = false;
+    boolean passChecker = false;
     String currentAnswer;
     @BindView(R.id.question_id_tv)
     TextView questionIdTV;
@@ -133,7 +133,7 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
         } else {
             passChecker = false;
         }
-        mCallback.onFeedbackReady(passChecker, timeoutChecker);
+        mCallback.onFeedbackReady(passChecker, false);
     }
 
     //This method keeps time per question
@@ -165,8 +165,7 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
     //This method is called when the time runs out before the user is able to
     // provide an answer to the given question.
     private void showTimeUp() {
-        timeoutChecker = true;
-        mCallback.onFeedbackReady(passChecker, timeoutChecker);
+        mCallback.onFeedbackReady(passChecker, true);
     }
 
     @Override
