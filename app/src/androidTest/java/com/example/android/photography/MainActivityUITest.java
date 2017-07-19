@@ -69,14 +69,13 @@ public class MainActivityUITest {
         onView(withId(R.id.next_question)).check(matches(isDisplayed()));
     }
 
+
     @Test
     public void FinalFeedbackTest() {
 
-        String successful = "Congratulations";
-        String unsuccessful = "Unsuccessful";
         onView(withId(R.id.assessment_button)).perform(click());
         QuizFragmentViewActions();
-        onView(withId(R.id.status)).check(matches(withText(unsuccessful)));
+        onView(withId(R.id.status)).check(matches(isDisplayed()));
         onView(withId(R.id.status_comment)).check(matches(isDisplayed()));
         onView(withId(R.id.continue_button)).check(matches(isDisplayed()));
     }
