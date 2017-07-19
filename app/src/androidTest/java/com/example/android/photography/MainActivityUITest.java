@@ -58,7 +58,7 @@ public class MainActivityUITest {
 
         //Sleep for 1 minute
         try {
-            Thread.sleep(62000);
+            Thread.sleep(60500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,10 +91,11 @@ public class MainActivityUITest {
         TimeOutViewTest();
         //check if the quiz fragment is displayed
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        onView(withId(R.id.next_question)).perform(click());
         QuizFragmentViewAssertions();
     }
 
@@ -103,6 +104,11 @@ public class MainActivityUITest {
         //Check for the quit button on the timeout version of the feedback fragment
         TimeOutViewTest();
         //Click on the QUit button
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.quit_test_button)).perform(click());
         //Check if the main fragment is displayed
         MainFragmentTest();

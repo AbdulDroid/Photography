@@ -125,12 +125,15 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onContinueClicked() {
+        feedbackFragment = FeedbackFragment.newInstance(false, false);
         ActivityUtils.removeFragmentFromActivity(getSupportFragmentManager(), feedbackFragment);
     }
 
     @Override
     public void onQuitClicked() {
         mainFragment = MainFragment.newInstance();
+        feedbackFragment = FeedbackFragment.newInstance(false, false);
+        ActivityUtils.removeFragmentFromActivity(getSupportFragmentManager(), feedbackFragment);
         ActivityUtils.replaceFragmentInActivity(getSupportFragmentManager(), mainFragment,
                 R.id.view_container);
     }
