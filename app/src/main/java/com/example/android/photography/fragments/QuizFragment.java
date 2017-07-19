@@ -1,18 +1,19 @@
 package com.example.android.photography.fragments;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.android.photography.FeedbackActivity;
 import com.example.android.photography.R;
 import com.example.android.photography.data.Question;
 import com.example.android.photography.views.TimeLeftView;
@@ -22,14 +23,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
 public class QuizFragment extends Fragment implements View.OnClickListener {
 
     public static final int QUIZ_SIZE = 5;
     public static final int QUIZ_TIME = 60 * 1000;
-    public static Context mContext;
-    int index = 0, questionNo = 1, correctAnswerCount = 0, wrongAnswerCount = 0;
-    String currentAnswer;
     public static List<Question> questions;
+    OnFeedbackReadyListener mCallback;
+    int index = 0, questionNo = 1, correctAnswerCount = 0, wrongAnswerCount = 0;
+    boolean passChecker = false, timeoutChecker = false;
+    String currentAnswer;
     @BindView(R.id.question_id_tv)
     TextView questionIdTV;
     @BindView(R.id.time_left)
@@ -44,13 +47,18 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
     Button optionThreeButton;
     @BindView(R.id.time_view)
     TimeLeftView timeLeftView;
-
     CountDownTimer quizTIme;
 
-    public static QuizFragment newInstance(Context context, List<Question> q) {
+    public static QuizFragment newInstance(List<Question> q) {
         questions = q;
-        mContext = context;
         return new QuizFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
     }
 
     @Nullable
@@ -71,6 +79,24 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_setting) {
+            return true;
+        }
+        if (itemId == android.R.id.home) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //This method is used to display quiz questions and options to the user
     public void buildQuiz(List<Question> questions) {
@@ -102,14 +128,12 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
 
     //This method is called when the user answers the last question of the quiz
     private void showResults() {
-        Intent intent = new Intent(mContext, FeedbackActivity.class);
         if (correctAnswerCount >= 3) {
-            intent.putExtra(FeedbackActivity.PASS_STATUS, true);
+            passChecker = true;
         } else {
-            intent.putExtra(FeedbackActivity.PASS_STATUS, false);
+            passChecker = false;
         }
-        intent.putExtra(FeedbackActivity.TIMEOUT_STATUS, false);
-        startActivity(intent);
+        mCallback.onFeedbackReady(passChecker, timeoutChecker);
     }
 
     //This method keeps time per question
@@ -141,9 +165,19 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
     //This method is called when the time runs out before the user is able to
     // provide an answer to the given question.
     private void showTimeUp() {
-        Intent intent = new Intent(mContext, FeedbackActivity.class);
-        intent.putExtra(FeedbackActivity.TIMEOUT_STATUS, true);
-        startActivity(intent);
+        timeoutChecker = true;
+        mCallback.onFeedbackReady(passChecker, timeoutChecker);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (OnFeedbackReadyListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() +
+                    "must implement OnFeedbackReadyListener");
+        }
     }
 
     @Override
@@ -170,5 +204,9 @@ public class QuizFragment extends Fragment implements View.OnClickListener {
         } else {
             wrongAnswerCount++;
         }
+    }
+
+    public interface OnFeedbackReadyListener {
+        void onFeedbackReady(boolean pass, boolean timeout);
     }
 }

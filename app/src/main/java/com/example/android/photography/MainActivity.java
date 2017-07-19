@@ -1,24 +1,19 @@
 package com.example.android.photography;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.example.android.photography.data.DatabaseManager;
 import com.example.android.photography.data.Question;
 import com.example.android.photography.data.QuestionDbHelper;
+import com.example.android.photography.fragments.FeedbackFragment;
+import com.example.android.photography.fragments.MainFragment;
 import com.example.android.photography.fragments.QuizFragment;
 
 import org.json.JSONException;
@@ -26,9 +21,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.android.photography.data.QuestionContract.QuestionEntry.COLUMN_CORRECT_ANSWER;
@@ -38,24 +31,37 @@ import static com.example.android.photography.data.QuestionContract.QuestionEntr
 import static com.example.android.photography.data.QuestionContract.QuestionEntry.COLUMN_QUESTION;
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener {
+        MainFragment.OnAssessmentSelectedListener, QuizFragment.OnFeedbackReadyListener,
+        FeedbackFragment.OnButtonClickListener {
 
-    @BindView(R.id.header_view_flipper)
-    ViewFlipper headerViewFlipper;
-    @BindView(R.id.assessment_button)
-    Button takeTestButton;
-    @BindView(R.id.take_course_button)
-    Button takeCourseButton;
-    public static Question singleQuestion;
-    QuestionDbHelper dbHelper;
-    private DatabaseManager databaseManager;
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    String[] video_links = {"https://www.youtube.com/watch?v=6_B8pVoANyY",
-            "https://www.youtube.com/watch?v=0q_qfSrTcLI",
-            "https://www.youtube.com/watch?v=7cOb2qlXsDY",
-            "https://www.youtube.com/watch?v=nQJQg3VBT7Q"};
-    int videoIndex = 0;
+    QuestionDbHelper dbHelper;
+    DatabaseManager databaseManager;
+    MainFragment mainFragment;
+    QuizFragment quizFragment;
+    FeedbackFragment feedbackFragment;
+
+    public static ArrayList<Question> getQuestions(Cursor data) {
+        ArrayList<Question> questionList = new ArrayList<>();
+
+        if (data != null && data.moveToFirst()) {
+            do {
+                Question question = new Question();
+
+                question.question = data.getString(data.getColumnIndex(COLUMN_QUESTION));
+                question.optionOne = data.getString(data.getColumnIndex(COLUMN_OPTION_ONE));
+                question.optionTwo = data.getString(data.getColumnIndex(COLUMN_OPTION_TWO));
+                question.optionThree = data.getString(data.getColumnIndex(COLUMN_OPTION_THREE));
+                question.correctAnswer = data.getString(data.getColumnIndex(COLUMN_CORRECT_ANSWER));
+
+                questionList.add(question);
+            } while (data.moveToNext());
+        }
+
+        Collections.shuffle(questionList);
+        return new ArrayList<>(questionList.subList(0, QuizFragment.QUIZ_SIZE));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,27 +69,24 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-
-        setSupportActionBar(toolbar);
 
         databaseManager = new DatabaseManager(this);
-        headerViewFlipper.setAutoStart(true);
-        takeTestButton.setOnClickListener(this);
-        takeCourseButton.setOnClickListener(this);
 
         dbHelper = new QuestionDbHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor testCursor = databaseManager.queryAllQuestions();
 
-        if (database == null || testCursor.getCount() == 0){
-            try{
+        if (database == null || testCursor.getCount() == 0) {
+            try {
                 dbHelper.readQuestionFromResource(database);
                 Log.i(TAG, "Added resource from json file");
-            }catch (IOException | JSONException e){
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
+
+        mainFragment = MainFragment.newInstance();
+        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), mainFragment, R.id.view_container);
     }
 
     @Override
@@ -97,61 +100,81 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.action_setting){
+        if (itemId == R.id.action_setting) {
+            return true;
+        }
+        if (itemId == android.R.id.home) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-
-        if (viewId == R.id.assessment_button){
-            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-            ArrayList<Question> randomQuestions = getQuestions(databaseManager.queryAllQuestions());
-            intent.putParcelableArrayListExtra(QuizActivity.EXTRA_QUESTION, randomQuestions);
-            startActivity(intent);
-        }
-
-        if (viewId == R.id.take_course_button){
-
-            Random random = new Random();
-            videoIndex = random.nextInt(video_links.length);
-
-            Uri uri = Uri.parse(video_links[videoIndex]);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(uri);
-
-            if (intent.resolveActivity(getPackageManager()) != null){
-                startActivity(intent);
-            }else {
-                Log.i(TAG, "Could not call" + uri.toString() + ", no receiving app"
-                        +"installed on your device!");
-                Toast.makeText(this, "Could not call " + uri.toString() + ", no received app"
-                        + "installed on your device!", Toast.LENGTH_LONG).show();
-            }
-        }
+    public void onAssessmentSelected(ArrayList<Question> question) {
+        quizFragment = QuizFragment.newInstance(question);
+        ActivityUtils.replaceFragmentInActivity(getSupportFragmentManager(), quizFragment,
+                R.id.view_container);
     }
 
-    public static ArrayList<Question> getQuestions(Cursor data){
-        ArrayList<Question> questionList = new ArrayList<>();
+    @Override
+    public void onFeedbackReady(boolean pass, boolean timeout) {
+        feedbackFragment = FeedbackFragment.newInstance(pass, timeout);
+        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedbackFragment,
+                R.id.view_container);
+    }
 
-        if (data != null && data.moveToFirst()){
-            do {
-               Question question = new Question();
+    @Override
+    public void onContinueClicked() {
+        ActivityUtils.removeFragmentFromActivity(getSupportFragmentManager(), feedbackFragment);
+    }
 
-                question.question = data.getString(data.getColumnIndex(COLUMN_QUESTION));
-                question.optionOne = data.getString(data.getColumnIndex(COLUMN_OPTION_ONE));
-                question.optionTwo = data.getString(data.getColumnIndex(COLUMN_OPTION_TWO));
-                question.optionThree = data.getString(data.getColumnIndex(COLUMN_OPTION_THREE));
-                question.correctAnswer = data.getString(data.getColumnIndex(COLUMN_CORRECT_ANSWER));
+    @Override
+    public void onQuitClicked() {
+        mainFragment = MainFragment.newInstance();
+        ActivityUtils.replaceFragmentInActivity(getSupportFragmentManager(), mainFragment,
+                R.id.view_container);
+    }
 
-                questionList.add(question);
-            }while (data.moveToNext());
+    @Override
+    public void onBackPressed() {
+        /*        int count = getSupportFragmentManager().getBackStackEntryCount();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment instanceof MainFragment) {
+                super.onBackPressed();
+                finish();
+                return;
+            }
+            if (fragment == null) {
+                super.onBackPressed();
+                finish();
+                return;
+            }
+            if (fragment.isVisible()) {
+                FragmentManager childFM = fragment.getChildFragmentManager();
+                if (childFM.getFragments() == null) {
+                    super.onBackPressed();
+                    finish();
+                    return;
+                }
+                if (childFM.getBackStackEntryCount() > 0) {
+                    childFM.popBackStack();
+                    return;
+                } else {
+                    fragmentManager.popBackStack();
+                    if (fragmentManager.getFragments().size() <= 1) {
+                        finish();
+                    }
+                    return;
+                }
+            }
         }
-
-        Collections.shuffle(questionList);
-        return new ArrayList<>(questionList.subList(0, QuizFragment.QUIZ_SIZE));
+    }*/
+        //        if(count==0){
+//            super.onBackPressed();
+//        }else{
+//            getSupportFragmentManager().popBackStack();
+//        }
     }
 }
